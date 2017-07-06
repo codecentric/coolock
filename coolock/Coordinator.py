@@ -45,12 +45,12 @@ class Coordinator:
         self.logger.setLevel(levels[options.log_level])
         handler = logging.handlers.RotatingFileHandler(
             options.log_file, maxBytes=options.log_max_size, backupCount=options.rotate_log_copies)
-        formatter=logging.Formatter('%(asctime)s - %(name)s (%(process)d) - %(levelname)s - %(message)s')
+        formatter = logging.Formatter('%(asctime)s - %(name)s (%(process)d) - %(levelname)s - %(message)s')
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
 
         # Configure coordination client
-        self.logger.debug("Initializing coordination client for node: %s. Using: %s" % \
+        self.logger.debug("Initializing coordination client for node: %s. Using: %s" %
                           (options.node, options.coordination_backend))
         self.coord_client = coordination.get_coordinator(
             options.coordination_backend, options.node)
@@ -89,7 +89,7 @@ class Coordinator:
         if proc.returncode == 0:
             self.logger.info("The payload command executed successfully.")
         else:
-            self.logger.error("The payload command returned an error code: %d. See command output for details." \
+            self.logger.error("The payload command returned an error code: %d. See command output for details."
                               % proc.returncode)
 
         return proc.returncode
@@ -112,7 +112,7 @@ class Coordinator:
             # Release lock after guard_time has run out
             if run_time < guard_time:
                 self.logger.debug(
-                    "Sleeping %f s, because the commands run time (%f s) was shorter than the guard_time (%f s)." \
+                    "Sleeping %f s, because the commands run time (%f s) was shorter than the guard_time (%f s)."
                     % (guard_time - run_time, run_time, guard_time))
                 time.sleep(guard_time - run_time)
             self.lock.release()
