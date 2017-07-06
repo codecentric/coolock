@@ -3,9 +3,10 @@
 library. For a list of supported coordination backends see
 [here](https://docs.openstack.org/developer/tooz/compatibility.html#locking).
 
-The tooz library is just an abstraction layer, depending on the used
-backend you need to install additional python libraries.
-At the time of writing the following lock backends can be used:
+The Tooz library is just an abstraction layer for different coordination
+backends. Depending on the used backend you may need to install additional
+python libraries. At the time of writing the following lock backends can be
+used:
 
 |Backend|Required Python PyPi Package(s)|
 |:---    |:---                            |
@@ -20,31 +21,37 @@ At the time of writing the following lock backends can be used:
 |File|(no additional packages required)|
 
 In volatile distributed systems a common problem is to execute a certain
-job just once for a number of nodes. Examples are backup cronjobs or sending
-mails on a regular basis. You want to execute those tasks just once no
-matter how many nodes your autoscaling mechanism has started at the given
-point in time. Most distributed systems already depend on a coordination
-backend like Apache ZooKeeper, Redis or Consul, that offer endpoints
-that clients can use to coordinate their work.
-`coolock` offers an easy to use coordination mechanism for your scripts
-and crojobs that can use a broad number of different coordination backends.
+job just once for a number of nodes. Examples are backup cronjobs, sending
+mails on a regular basis or reporting tasks. You want to execute those tasks
+just once, no matter how many nodes your autoscaling mechanism has started at
+the given point in time. Most distributed systems already depend on a
+coordination backend like Apache ZooKeeper, Redis or Consul.
+`coolock` offers an easy to use wrapper for those coordination backends,
+that you can easily use for your tasksr, keeping the complexity of
+coordination and even dealing with a coordination backend outside of
+your scripts and crojobs.
 
 *NOTE: This requires synced clocks to work as expected*
+
+## Installation
+`coolock` is available in the PyPI repository. Use pip to install it:
+```
+pip install coolock
+```
 
 ## Usage
 ```
 # Basic usage:
-python coolock.py -b redis://localhost:6379 echo "Hello World"
+coolock --backend redis://localhost:6379 echo "Hello World"
 
-# Running two instances. One will return immediately without command
-execution.
-python coolock.py -b redis://localhost:6379 echo "instance 1" &
-python coolock.py -b redis://localhost:6379 echo "instance 2" &
+# Running two instances on the same host. One will return immediately.
+coolock --backend redis://localhost:6379 --node 1 echo "instance 1" &
+coolock --backend redis://localhost:6379 --node 2 echo "instance 2" &
 ```
 
 ## Configuration file
 You may also configure some or all parameters in a configuration file.
-`coolock` looks for config files at `/etc/coolock` and `~/.coolock`.
+`coolock` looks for config files at `/etc/coolock` and `$HOME/coolock`.
 
 Example configuration file:
 ```
