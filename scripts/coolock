@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+
+# -*- coding: utf-8 -*-
+# Copyright (C) 2017 Daniel Marks
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import configargparse
+import socket
+import coolock
+
+p = configargparse.ArgParser(default_config_files=['/etc/coolock', '~/.coolock'])
+p.add('-c', '--config-file', required=False, is_config_file=True, help='config file path')
+p.add('-b', '--coordination-backend', required=True, help='Coordinator host string. (Example: "redis://127.0.0.1:6379")')
+p.add('-l', '--lock', default="coolock", required=False, help='Identifier for the lock to acquire. Default: coolock')
+p.add('-g', '--guard-time', default=30, type=int, required=False, help='The wrapper will stay active as long as "command" needs to execute, but at least for the the given GUARD_TIME (in seconds).')
+p.add('-n', '--node', default=socket.gethostname(), required=False, help='Can be used to override the name this node uses to identify at the coordination backend. (Defaults to the hostname)')
+p.add('-w', '--wait-timeout', type=int, default=0, required=False, help='Timeout (in seconds) for trying to acquire the lock. Default: 0 (Return immediately if resource is locked).')
+p.add('-f', '--log-file', default="/var/log/coolock.log", required=False, help='Log file destination.')
+p.add('-v', '--log-level', default="info", required=False, help='Log level: debug, info, warning, error, critical.')
+p.add('-m', '--log-max-size', type=int, default=20971520, required=False, help='Log maximum size before it gets rotated.')
+p.add('-r', '--rotate-log-copies', type=int, default=5, required=False, help='Number of rotated log copies to keep.')
+
+p.add('command', nargs='+', help='command to run')
+
+options = p.parse_args()
+
+def main():
+    global options
+    coord = coolock.Coordinator(options)
+    coord.run()
+    exit(coord.rc)
+
+if __name__ == "__main__":
+    # execute only if run as a script
+    main()

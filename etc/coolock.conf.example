@@ -1,0 +1,29 @@
+# Coordination backend URI
+# coordination-backend: kazoo://localhost:2181
+
+# Name of the lock to acquire
+# lock: coolock
+
+# Wait at least guard-time (in seconds) to block other executions of the same job.
+# If the execution of the command takes longer then the guard-time execution stops
+# right after the command finishes.
+# guard-time: 30
+
+# This nodes name. Default is the hostname.
+# node: myhost
+
+# Wait at least wait-timeout (in seconds) to acquire the lock
+# wait-timeout: 0
+
+# Log file destination
+# log-file: /var/lock/coolock.log
+
+# Log level:
+# Possible values are: debug, info, warning, error, critical
+# log-level: info
+
+# Log file maximum size
+# log-max-size: 20971520 # 20 MB
+
+# Number of rotated log copies to keep
+# rotate-log-copies: 5
